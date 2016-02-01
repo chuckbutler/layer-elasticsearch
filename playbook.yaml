@@ -1,0 +1,55 @@
+- hosts: localhost
+  handlers:
+
+    - name: Restart ElasticSearch
+      service: name=elasticsearch state=restarted
+
+  vars:
+    - service_name: "{{ local_unit.split('/')[0] }}"
+
+  tasks:
+
+    - include: tasks/install-elasticsearch.yml
+      tags:
+        - ansible.available
+      
+    - name: Update configuration
+      tags:
+        - config-changed
+      template: src={{ charm_dir }}/templates/elasticsearch.yml
+                dest=/etc/elasticsearch/elasticsearch.yml
+                mode=0644
+                backup=yes
+      notify:
+        - Restart ElasticSearch
+
+    - name: Open ES Port when exposed
+      command: open-port 9200
+      tags:
+        - elasticsearch.available
+
+    - name: Start ElasticSearch
+      service: name=elasticsearch state=started
+      tags:
+        - ansible.available
+
+    - name: Stop ElasticSearch
+      service: name=elasticsearch state=stopped
+      tags:
+        - elasticsearch.stop
+
+    - name: Relate the cluster name and host.
+      tags:
+        - client-relation-joined
+      command: >
+        relation-set
+        cluster-name={{ cluster_name }}
+        host={{ ansible_default_ipv4.address }}
+        port=9200
+
+    # A bug in the ansible hooks() helper requires at least
+    # one task to be tagged.
+    - name: Empty task to keep ansible helper satisfied.
+      debug: msg="Noop ansible task."
+      tags:
+        - ansible.noop

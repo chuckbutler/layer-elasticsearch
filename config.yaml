@@ -1,0 +1,23 @@
+options:
+  apt-repository:
+    type: string
+    default: "deb [arch=amd64] http://packages.elastic.co/elasticsearch/1.7/debian stable main"
+    description: |
+      A deb-line for the apt archive which contains the elasticsearch package.
+      This is necessary until elasticsearch gets into the debian/ubuntu archives.
+  apt-key-url:
+    type: string
+    default: "http://packages.elasticsearch.org/GPG-KEY-elasticsearch"
+    description: |
+      The url for the key for the apt-repository.
+  gpg-key-id:
+    type: string
+    default: D88E42B4
+    description: |
+      Elasticsearch's GPG fingerprint to validate the apt key
+  cluster-name:
+    type: string
+    default: "elasticsearch"
+    description: |
+      This sets the elasticsearch cluster name.
+
