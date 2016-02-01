@@ -1,4 +1,4 @@
-name: elasticsearch2
+name: ansiblesearch
 description: Deploys Elasticsearch via charm layers with Ansible
 subordinate: false
 peers:
